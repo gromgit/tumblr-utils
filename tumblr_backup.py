@@ -568,6 +568,10 @@ class TumblrBackup:
                         continue
                 if options.no_reblog:
                     if 'reblogged_from_name' in p or 'reblogged_root_name' in p:
+                        # Save JSON in a separate dir upon request
+                        if options.alt_json_dir:
+                            with open_text(options.alt_json_dir, post.ident + '.json') as f:
+                                f.write(post.json_content)
                         if 'trail' in p and not p['trail']:
                             continue
                         elif 'trail' in p and 'is_current_item' not in p['trail'][-1]:
@@ -1139,6 +1143,7 @@ if __name__ == '__main__':
         " (comma-separated values from %s)" % ', '.join(POST_TYPES)
     )
     parser.add_option('--no-reblog', action='store_true', help="don't save reblogged posts")
+    parser.add_option('--alt-json-dir', help="save JSONs of unsaved posts in named subdir")
     parser.add_option('-I', '--image-names', type='choice', choices=('o', 'i', 'bi'),
         default='o', metavar='FMT',
         help="image filename format ('o'=original, 'i'=<post-id>, 'bi'=<blog-name>_<post-id>)"
